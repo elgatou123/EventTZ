@@ -1,0 +1,164 @@
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex-grow: 1;
+}
+
+.intro-section {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  padding: 6rem 1rem;
+  height: 300px; /* Set a fixed height, adjust as needed */
+  text-align: center;
+  width: 100vw; /* Make it stretch across the full viewport width */
+  margin-left: calc(-50vw + 50%); /* Align it properly with the viewport */
+  margin-right: calc(-50vw + 50%); /* Align it properly with the viewport */
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.heading {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.description {
+  font-size: 1.125rem;
+  color: #d1d5db;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.filter-section {
+  padding: 32px 24px;
+  width: 100%;
+}
+
+
+.container {
+  width: 100%;
+  max-width: none;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+.filter-box {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 32px;
+}
+
+.filter-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .filter-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+}
+
+.search-input {
+  padding-left: 32px;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.select-input {
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: center; /* Center the button horizontally */
+  margin-top: 27px; /* Optional: adds space above the button */
+}
+
+
+.reset-button {   
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  background-color: #1e40af;
+}
+
+.events-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .events-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.no-results h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
