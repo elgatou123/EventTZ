@@ -14,83 +14,83 @@ const Events = () => {
   const [eventType, setEventType] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-const events = useSelector((state) => state.events?.data || []);
-const userInfo = useSelector((state) => state.user?.userInfo);
-  console.log("Événements depuis Redux:", events);
+  const events = useSelector((state) => state.events?.data || []);
+  const { user: reduxUser } = useSelector((state) => state.auth);
+  const [localUser, setLocalUser] = useState(null);
 
+  useEffect(() => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        setLocalUser(JSON.parse(userData).user);
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+    }
+  }, []);
 
-  let parsedUser = null;
-  try {
-    const rawUser = localStorage.getItem("user");
-    parsedUser = rawUser ? JSON.parse(rawUser) : null;
-  } catch {
-    parsedUser = null;
-  }
+  const user = reduxUser || localUser;
 
   useEffect(() => {
     dispatch(Actions.getEvents());
   }, [dispatch]);
 
   const getFilteredEvents = () => {
-    let eventsToShow = events;
+    let filtered = [...events];
 
-    if (parsedUser?.role === "organizer") {
-      eventsToShow = eventsToShow.filter(
-        (event) => event.organizer_id === parsedUser.id
+    // Filter by user role
+    if (user?.role === "organizer") {
+      filtered = filtered.filter(event => 
+        event?.organizer_id === user?.id
       );
     }
 
-    return eventsToShow.filter((event) => {
-      const matchesSearch =
-        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.location.toLowerCase().includes(searchTerm.toLowerCase());
+    // Apply search and type filters
+    return filtered.filter(event => {
+      if (!event) return false;
 
-      const matchesType = eventType === "all" || event.type === eventType;
+      const matchesSearch = 
+        (event.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+         event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         event.location?.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      const matchesType = 
+        eventType === "all" || 
+        event.type?.toLowerCase() === eventType.toLowerCase();
 
       return matchesSearch && matchesType;
     });
   };
 
-  const filteredEvents = getFilteredEvents();
+  const filteredEvents = getFilteredEvents().map(event => ({
+    id: event.id || '',
+    title: event.title || 'Titre non disponible',
+    description: event.description || '',
+    location: event.location || '',
+    type: event.type || 'other',
+    image: event.image || '/default-event-image.jpg',
+    available_spots: event.available_spots || 0,
+    organizer_id: event.organizer_id || null,
+    services: event.services || []
+  }));
 
-  const getPageTitle = () =>
-    parsedUser?.role === "organizer"
-      ? "Mes Événements"
-      : "Parcourir les Événements";
+  const getPageTitle = () => 
+    user?.role === "organizer" ? "Mes Événements" : "Parcourir les Événements";
 
   const getPageDescription = () =>
-    parsedUser?.role === "organizer"
+    user?.role === "organizer"
       ? "Gérez vos événements et suivez les réservations."
       : "Trouvez l'événement parfait auquel assister ou inspirez-vous pour planifier le vôtre.";
 
-  const getEmptyStateMessage = () => {
-    if (parsedUser?.role === "organizer") {
-      return {
-        title: "Vous n'avez aucun événement",
-        description:
-          "Cliquez ci-dessous pour créer votre premier événement et commencer à gérer les réservations.",
-        action: "Créer Votre Premier Événement",
-      };
-    }
-    return {
-      title: "Aucun événement trouvé",
-      description:
-        "Essayez d'ajuster vos filtres de recherche ou revenez plus tard pour de nouveaux événements.",
-      action: null,
-    };
+  const emptyState = {
+    title: user?.role === "organizer" 
+      ? "Vous n'avez aucun événement" 
+      : "Aucun événement trouvé",
+    description: user?.role === "organizer"
+      ? "Créez votre premier événement pour commencer."
+      : "Essayez de modifier vos critères de recherche.",
+    action: user?.role === "organizer" ? "Créer un Événement" : null
   };
-
-  const handleCreateEvent = async (eventData) => {
-    try {
-      await dispatch(Actions.createEvent(eventData));
-      setIsCreateDialogOpen(false);
-    } catch (error) {
-      console.error("Error creating event:", error);
-    }
-  };
-
-  const emptyState = getEmptyStateMessage();
 
   return (
     <div className="page">
@@ -101,7 +101,8 @@ const userInfo = useSelector((state) => state.user?.userInfo);
           <div className="container">
             <h1 className="heading">{getPageTitle()}</h1>
             <p className="description">{getPageDescription()}</p>
-            {parsedUser?.role === "organizer" && (
+            
+            {user?.role === "organizer" && (
               <button
                 className="create-button"
                 onClick={() => setIsCreateDialogOpen(true)}
@@ -126,7 +127,7 @@ const userInfo = useSelector((state) => state.user?.userInfo);
                     <input
                       id="search"
                       type="text"
-                      placeholder="Rechercher par nom, description, lieu..."
+                      placeholder="Rechercher..."
                       className="search-input"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -144,10 +145,10 @@ const userInfo = useSelector((state) => state.user?.userInfo);
                     value={eventType}
                     onChange={(e) => setEventType(e.target.value)}
                   >
-                    <option value="all">Tous les types d'événements</option>
+                    <option value="all">Tous les types</option>
                     <option value="wedding">Mariage</option>
                     <option value="party">Fête</option>
-                    <option value="funeral">Funérailles</option>
+                    <option value="conference">Conférence</option>
                   </select>
                 </div>
 
@@ -159,7 +160,7 @@ const userInfo = useSelector((state) => state.user?.userInfo);
                       setEventType("all");
                     }}
                   >
-                    Réinitialiser les Filtres
+                    Réinitialiser
                   </button>
                 </div>
               </div>
@@ -169,12 +170,9 @@ const userInfo = useSelector((state) => state.user?.userInfo);
               <div className="events-grid">
                 {filteredEvents.map((event) => (
                   <EventCard
-                    key={event.id}
+                    key={event.id || `event-${Math.random().toString(36).substr(2, 9)}`}
                     event={event}
-                    isOwner={
-                      parsedUser?.role === "organizer" &&
-                      parsedUser.id === event.organizer_id
-                    }
+                    isOwner={user?.role === "organizer" && user.id === event.organizer_id}
                   />
                 ))}
               </div>
@@ -182,7 +180,7 @@ const userInfo = useSelector((state) => state.user?.userInfo);
               <div className="no-results">
                 <h3>{emptyState.title}</h3>
                 <p>{emptyState.description}</p>
-                {emptyState.action && parsedUser?.role === "organizer" && (
+                {emptyState.action && (
                   <button
                     className="create-button"
                     onClick={() => setIsCreateDialogOpen(true)}
@@ -197,11 +195,10 @@ const userInfo = useSelector((state) => state.user?.userInfo);
         </section>
       </main>
 
-      {parsedUser?.role === "organizer" && (
+      {user?.role === "organizer" && (
         <CreateEventDialog
           open={isCreateDialogOpen}
           onOpenChange={setIsCreateDialogOpen}
-          onSubmit={handleCreateEvent}
         />
       )}
 
@@ -211,3 +208,4 @@ const userInfo = useSelector((state) => state.user?.userInfo);
 };
 
 export default Events;
+

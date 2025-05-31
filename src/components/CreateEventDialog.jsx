@@ -16,21 +16,32 @@ const formSchema = z.object({
   availableSpots: z.number().min(1, "Le nombre de places doit être d'au moins 1"),
 });
 
-// Available services
 const availableServices = [
   { id: "catering", label: "Restauration" },
   { id: "decoration", label: "Décoration" },
   { id: "music", label: "Musique / DJ" },
   { id: "photography", label: "Photographie" },
-
 ];
 
 const CreateEventDialog = ({ open, onOpenChange }) => {
   const { toast } = useToast();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-const { loading: eventLoading, error: eventError } = useSelector((state) => state.events);
+  const { user: reduxUser } = useSelector((state) => state.auth);
+  const { loading: eventLoading, error: eventError } = useSelector((state) => state.events);
+  const { data: services } = useSelector((state) => state.services);
   const [selectedServices, setSelectedServices] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Get user from localStorage as fallback
+  useEffect(() => {
+    const localStorageUser = JSON.parse(localStorage.getItem('user'));
+    if (localStorageUser?.user) {
+      setCurrentUser(localStorageUser.user);
+    }
+  }, []);
+
+  // Prefer Redux user if available, otherwise use localStorage user
+  const user = reduxUser || currentUser;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -42,9 +53,8 @@ const { loading: eventLoading, error: eventError } = useSelector((state) => stat
       services: [],
       availableSpots: 1,
     },
-    
   });
-console.log( form.getValues());
+
   useEffect(() => {
     form.setValue("services", selectedServices);
   }, [selectedServices, form]);
@@ -61,6 +71,22 @@ console.log( form.getValues());
 
   if (!open) return null;
 
+  if (!user) {
+    return (
+      <div className="dialog-backdrop" onClick={() => onOpenChange(false)}>
+        <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+          <p>Vous devez être connecté pour créer un événement.</p>
+          <button 
+            className="btn btn-primary"
+            onClick={() => onOpenChange(false)}
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const handleServiceChange = (serviceId, checked) => {
     setSelectedServices((prev) =>
       checked ? [...prev, serviceId] : prev.filter((id) => id !== serviceId)
@@ -68,10 +94,38 @@ console.log( form.getValues());
   };
 
   const onSubmit = async (values) => {
-  try {
-    const resultAction = await dispatch(Actions.createEvent(values));
-    
-    if (Actions.createEvent.fulfilled.match(resultAction)) {
+    try {
+      if (!user || !user.id) {
+        throw new Error("User authentication required to create an event");
+      }
+
+      // Map service names to IDs using the services from Redux store
+      const serviceIds = selectedServices.map(serviceName => {
+        const service = services?.find(s => s.name?.toLowerCase() === serviceName?.toLowerCase());
+        return service ? service.id : null;
+      }).filter(id => id !== null);
+
+      // Prepare payload for backend
+      const payload = {
+        title: values.title,
+        description: values.description,
+        type: values.type,
+        location: values.location,
+        available_spots: values.availableSpots,
+        organizer_id: user.id,
+        services: serviceIds
+      };
+
+      console.log("Submitting event with payload:", payload);
+
+      // Dispatch the action and wait for the result
+      const result = await dispatch(Actions.createEvent(payload));
+      
+      // Check if the action was successful
+      if (result.error) {
+        throw new Error(result.error.message || "Failed to create event");
+      }
+
       toast({
         title: "Événement créé",
         description: "Votre événement a été créé avec succès !",
@@ -79,11 +133,15 @@ console.log( form.getValues());
       form.reset();
       setSelectedServices([]);
       onOpenChange(false);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue lors de la création de l'événement",
+        variant: "destructive",
+      });
     }
-  } catch (error) {
-    // Error is already handled by the Redux state
-  }
-};
+  };
 
   return (
     <div className="dialog-backdrop" onClick={() => onOpenChange(false)}>

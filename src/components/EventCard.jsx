@@ -1,15 +1,32 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, MapPin, Edit, Trash2, MoreVertical } from "lucide-react";
+import PropTypes from "prop-types";
 import EditEventDialog from "./EditEventDialog";
 import { useToast } from "../hooks/use-toast";
-import "./EventCard.css"; // Assuming you have a CSS file for styling
+import "./EventCard.css";
 
-const EventCard = ({ event, isOwner = false }) => {
+const EventCard = ({ event, isOwner }) => {
+  const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const { toast } = useToast();
+
+  // Safe destructuring with defaults
+  const {
+    id = '',
+    title = 'Titre non disponible',
+    description = 'Description non disponible',
+    location = 'Lieu non spécifié',
+    type = 'other',
+    image = '/default-event-image.jpg',
+    available_spots = 0,
+    organizer_id = null
+  } = event || {};
+
+  if (!event) {
+    return <div className="event-card error">Chargement de l'événement...</div>;
+  }
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -17,8 +34,9 @@ const EventCard = ({ event, isOwner = false }) => {
     setShowDropdown(false);
   };
 
-  const handleDelete = () => {
-    console.log("Suppression de l'événement:", event.id);
+  const handleDelete = (e) => {
+    e.preventDefault();
+    console.log("Deleting event:", id);
     toast({
       title: "Événement Supprimé",
       description: "Votre événement a été supprimé avec succès.",
@@ -26,108 +44,109 @@ const EventCard = ({ event, isOwner = false }) => {
     setShowDeleteDialog(false);
   };
 
+  const handleImageError = (e) => {
+    e.target.src = '/default-event-image.jpg';
+  };
+
+  // Safe type display
+  const displayType = type 
+    ? type.charAt(0).toUpperCase() + type.slice(1)
+    : 'Événement';
+
   return (
-    <>
-      <div className="event-card">
-        <Link to={`/events/${event.id}`} className="event-link">
-          <div className="event-image-wrapper">
-            <img
-              src={event.image}
-              alt={event.title}
-              className="event-image"
-            />
-            <div className="event-type-badge">
-              {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-            </div>
+    <div className="event-card" data-testid="event-card">
+      <Link to={`/events/${id}`} className="event-link">
+        <div className="event-image-wrapper">
+          <img
+            src={image}
+            alt={title}
+            className="event-image"
+            onError={handleImageError}
+          />
+          <div className="event-type-badge">
+            {displayType}
+          </div>
 
-            {isOwner && (
-              <div className="event-dropdown">
-                <button
-                  className="dropdown-toggle"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowDropdown(!showDropdown);
-                  }}
-                  aria-haspopup="true"
-                  aria-expanded={showDropdown}
-                  aria-label="Open menu"
+          {isOwner && (
+            <div className="event-dropdown">
+              <button
+                className="dropdown-toggle"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowDropdown(!showDropdown);
+                }}
+                aria-haspopup="true"
+                aria-expanded={showDropdown}
+                aria-label="Menu options"
+              >
+                <MoreVertical className="icon-small" />
+              </button>
+
+              {showDropdown && (
+                <ul 
+                  className="dropdown-menu" 
+                  role="menu"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <MoreVertical className="icon-small" />
-                </button>
-
-                {showDropdown && (
-                  <ul className="dropdown-menu" role="menu">
-                    <li
-                      className="dropdown-item"
-                      onClick={handleEdit}
-                      role="menuitem"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === "Enter" && handleEdit(e)}
-                    >
-                      <Edit className="icon-small dropdown-icon" />
-                      Modifier
-                    </li>
-                    <li
-                      className="dropdown-item dropdown-delete"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setShowDeleteDialog(true);
-                        setShowDropdown(false);
-                      }}
-                      role="menuitem"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          setShowDeleteDialog(true);
-                          setShowDropdown(false);
-                        }
-                      }}
-                    >
-                      <Trash2 className="icon-small dropdown-icon" />
-                      Supprimer
-                    </li>
-                  </ul>
-                )}
-              </div>
-            )}
-          </div>
-        </Link>
-
-        <Link to={`/events/${event.id}`} className="event-link">
-          <div className="event-content">
-            <h3 className="event-title">{event.title}</h3>
-            <p className="event-description">{event.description}</p>
-            <div className="event-meta">
-              <span>place disponibles :{event.available_spots}</span>
+                  <li
+                    className="dropdown-item"
+                    onClick={handleEdit}
+                    role="menuitem"
+                  >
+                    <Edit className="icon-small dropdown-icon" />
+                    Modifier
+                  </li>
+                  <li
+                    className="dropdown-item dropdown-delete"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowDeleteDialog(true);
+                      setShowDropdown(false);
+                    }}
+                    role="menuitem"
+                  >
+                    <Trash2 className="icon-small dropdown-icon" />
+                    Supprimer
+                  </li>
+                </ul>
+              )}
             </div>
-            <div className="event-meta">
-              <MapPin size={16} />
-              <span className="location">{event.location}</span>
-            </div>
+          )}
+        </div>
+
+        <div className="event-content">
+          <h3 className="event-title">{title}</h3>
+          <p className="event-description">
+            {description.length > 100 
+              ? `${description.substring(0, 100)}...` 
+              : description}
+          </p>
+          <div className="event-meta">
+            <span>Places disponibles: {available_spots}</span>
           </div>
-          <div className="event-footer">
-            Organisé par {event.organizerName}
+          <div className="event-meta">
+            <MapPin size={16} />
+            <span className="location">{location}</span>
           </div>
-        </Link>
+        </div>
+      </Link>
+
+      <div className="event-footer">
+        Organisé par {organizer_id || 'Anonyme'}
       </div>
 
-      {/* Delete Confirmation Dialog */}
       {showDeleteDialog && (
         <div
           className="alert-dialog-backdrop"
-          role="alertdialog"
-          aria-modal="true"
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+          onClick={() => setShowDeleteDialog(false)}
         >
-          <div className="alert-dialog-content">
-            <h2 className="alert-dialog-title" id="alert-dialog-title">
+          <div className="alert-dialog-content" onClick={(e) => e.stopPropagation()}>
+            <h2 className="alert-dialog-title">
               Êtes-vous sûr ?
             </h2>
-            <p className="alert-dialog-description" id="alert-dialog-description">
-              Cette action ne peut pas être annulée. Cela supprimera définitivement votre événement
-              et supprimera toutes les données associées.
+            <p className="alert-dialog-description">
+              Cette action supprimera définitivement votre événement.
             </p>
             <div className="alert-dialog-footer">
               <button
@@ -147,9 +166,34 @@ const EventCard = ({ event, isOwner = false }) => {
         </div>
       )}
 
-      <EditEventDialog open={showEditDialog} onOpenChange={setShowEditDialog} event={event} />
-    </>
+      <EditEventDialog 
+        open={showEditDialog} 
+        onOpenChange={setShowEditDialog} 
+        event={event} 
+      />
+    </div>
   );
+};
+
+EventCard.propTypes = {
+  event: PropTypes.shape({
+    id: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    location: PropTypes.string,
+    type: PropTypes.string,
+    image: PropTypes.string,
+    available_spots: PropTypes.number,
+    organizer_id: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ])
+  }).isRequired,
+  isOwner: PropTypes.bool
+};
+
+EventCard.defaultProps = {
+  isOwner: false
 };
 
 export default EventCard;

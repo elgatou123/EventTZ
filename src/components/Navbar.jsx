@@ -26,8 +26,7 @@ useEffect(() => {
     setUser(null);  
     navigate("/");
   };
-  console.log("User state after logout:", user?.fullName);
-  console.log("User state after logout:", user?.userType);
+
 
   return (
     <nav className="navbar">

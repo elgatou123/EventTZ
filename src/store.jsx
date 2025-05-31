@@ -175,59 +175,41 @@ getEvents: () => async (dispatch) => {
     }
   },
 
-  createEvent: (eventData) => async (dispatch, getState) => {
-    try {
-      dispatch({ type: ActionTypes.EVENT_CREATE_REQUEST });
+ createEvent: (eventData) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ActionTypes.EVENT_CREATE_REQUEST });
 
-      const { auth: { userInfo } } = getState();
-      
-      if (!userInfo || userInfo.role !== 'organizer') {
-        throw new Error('Only organizers can create events');
+    const { auth: { userInfo } } = getState();
+    
+    if (!userInfo || userInfo.role !== 'organizer') {
+      throw new Error('Only organizers can create events');
+    }
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`
       }
+    };
 
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${userInfo.token}`
-        }
-      };
+    const { data } = await axios.post(
+      `${API_BASE}/events`,
+      eventData,
+      config
+    );
 
-      const { data } = await axios.post(
-        `${API_BASE}/events`,
-        eventData,
-        config
-      );
+    dispatch({
+      type: ActionTypes.EVENT_CREATE_SUCCESS,
+      payload: data
+    });
 
-      dispatch({
-        type: ActionTypes.EVENT_CREATE_SUCCESS,
-        payload: data
-      });
-
-      return data;
-    } catch (error) {
-      const message = error.response?.data?.message || error.message;
-      dispatch({ type: ActionTypes.EVENT_CREATE_FAILURE, payload: message });
-      throw message;
-    }
-  },
-
-  // Service Actions
-  loadServices: () => async (dispatch) => {
-    try {
-      dispatch({ type: ActionTypes.SERVICES_LOAD_REQUEST });
-
-      const { data } = await axios.get(`${API_BASE}/services`);
-
-      dispatch({
-        type: ActionTypes.SERVICES_LOAD_SUCCESS,
-        payload: data
-      });
-    } catch (error) {
-      const message = error.response?.data?.message || error.message;
-      dispatch({ type: ActionTypes.SERVICES_LOAD_FAILURE, payload: message });
-    }
-  },
-
+    return data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    dispatch({ type: ActionTypes.EVENT_CREATE_FAILURE, payload: message });
+    throw message;
+  }
+},
   createService: (serviceData) => async (dispatch, getState) => {
     try {
       dispatch({ type: ActionTypes.SERVICE_CREATE_REQUEST });
