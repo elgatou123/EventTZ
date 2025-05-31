@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
 import {
   Calendar,
   Users,
@@ -13,82 +14,83 @@ import {
 } from "lucide-react";
 import "./About.css";
 
+
 const features = [
   {
     icon: <Calendar className="icon" />,
-    title: "Easy Event Creation",
-    description: "Create beautiful event pages with all the details your guests need."
+    title: "Création Facile d'Événements",
+    description: "Créez de belles pages d'événements avec tous les détails dont vos invités ont besoin."
   },
   {
     icon: <Users className="icon" />,
-    title: "Guest Management",
-    description: "Invite guests with unique links and track their responses."
+    title: "Gestion des Invités",
+    description: "Invitez vos invités avec des liens uniques et suivez leurs réponses."
   },
   {
     icon: <CheckCircle className="icon" />,
-    title: "Response Tracking",
-    description: "See who's confirmed, declined, or still pending with real-time updates."
+    title: "Suivi des Réponses",
+    description: "Voyez qui a confirmé, décliné ou est encore en attente avec des mises à jour en temps réel."
   },
   {
     icon: <Bell className="icon" />,
-    title: "Reminders",
-    description: "Automatic reminders for upcoming events and pending responses."
+    title: "Rappels Automatiques",
+    description: "Rappels pour les événements à venir et les réponses en attente."
   },
   {
     icon: <Shield className="icon" />,
-    title: "Privacy & Security",
-    description: "Your event data and guest information are always secure with us."
+    title: "Confidentialité et Sécurité",
+    description: "Vos données d'événements et informations d'invités sont toujours sécurisées."
   },
   {
     icon: <MessageSquare className="icon" />,
-    title: "Guest Communication",
-    description: "Easy communication with all your guests through the platform."
-  }
-];
-
-const faqs = [
-  {
-    question: "Is Event-Verse free to use?",
-    answer: "Yes, Event-Verse is currently free for basic usage. We may introduce premium features in the future."
-  },
-  {
-    question: "How many guests can I invite?",
-    answer: "There is no limit to the number of guests you can invite to your events."
-  },
-  {
-    question: "Can guests see who else is invited?",
-    answer: "No, guests can only see their own invitation and response status, not the full guest list."
-  },
-  {
-    question: "Can I edit an event after creating it?",
-    answer: "Yes, you can edit your event details at any time, and all guests will see the updated information."
-  },
-  {
-    question: "How do I contact support?",
-    answer: "For any questions or assistance, please email us at support@event-verse.com."
+    title: "Communication Facile",
+    description: "Communiquez facilement avec tous vos invités via la plateforme."
   }
 ];
 
 const steps = [
   {
     step: "1",
-    title: "Create an Event",
-    description: "Set up your event with all the details: date, time, location, and services."
+    title: "Créer un Événement",
+    description: "Configurez votre événement avec tous les détails : date, heure, lieu et services."
   },
   {
     step: "2",
-    title: "Generate Invitations",
-    description: "Create a reservation and get a unique invite link to share with your guests."
+    title: "Générer des Invitations",
+    description: "Créez une réservation et obtenez un lien d'invitation unique à partager avec vos invités."
   },
   {
     step: "3",
-    title: "Share with Guests",
-    description: "Send the invite link via email, messaging apps, or social media."
+    title: "Partager avec les Invités",
+    description: "Envoyez le lien d'invitation par e-mail, messagerie ou réseaux sociaux."
   },
   {
     step: "4",
-    title: "Track Responses",
-    description: "Monitor who's coming, who's not, and who hasn't responded yet."
+    title: "Suivre les Réponses",
+    description: "Surveillez qui vient, qui ne vient pas et qui n'a pas encore répondu."
+  }
+];
+
+const faqs = [
+  {
+    question: "EventVerse est-il gratuit ?",
+    answer: "Oui, EventVerse est actuellement gratuit pour une utilisation de base. Nous pourrions ajouter des fonctionnalités premium à l'avenir."
+  },
+  {
+    question: "Combien d'invités puis-je inviter ?",
+    answer: "Il n'y a pas de limite au nombre d'invités que vous pouvez inviter."
+  },
+  {
+    question: "Les invités peuvent-ils voir la liste complète des invités ?",
+    answer: "Non, les invités ne voient que leur propre invitation et statut, pas la liste complète."
+  },
+  {
+    question: "Puis-je modifier un événement après sa création ?",
+    answer: "Oui, vous pouvez modifier les détails de votre événement à tout moment, et les invités verront les mises à jour."
+  },
+  {
+    question: "Comment contacter le support ?",
+    answer: "Pour toute question, envoyez-nous un e-mail à support@eventverse.com."
   }
 ];
 
@@ -101,33 +103,31 @@ const About = () => {
         <section className="hero-section">
           <div className="container">
             <div className="hero-text">
-              <h1>About Event-Verse Invites</h1>
-              <p>Making event planning and invitations simple, elegant, and stress-free.</p>
-              <Link to="/events" className="btn primary-btn">Explore Events</Link>
+              <h1>À propos d'EventVerse Invitations</h1>
+              <p>Rendre la planification d'événements et les invitations simples, élégantes et sans stress.</p>
+              <Link to="/events" className="btn primary-btn">Explorer les Événements</Link>
             </div>
           </div>
         </section>
 
-        {/* Our Mission */}
         <section className="section">
           <div className="container center-text">
-            <h2>Our Mission</h2>
+            <h2>Notre Mission</h2>
             <p>
-              At Event-Verse, we believe that planning events should be as enjoyable as attending them. 
-              Our mission is to simplify the event planning process by providing a seamless platform for 
-              creating events, sending invitations, and tracking responses.
+              Chez EventVerse, nous pensons que planifier un événement doit être aussi agréable que d’y assister. 
+              Notre mission est de simplifier la planification en fournissant une plateforme fluide pour 
+              créer des événements, envoyer des invitations et suivre les réponses.
             </p>
             <p>
-              Whether it's a wedding, birthday party, conference, or any special occasion, 
-              we're here to make your event planning experience stress-free and delightful.
+              Que ce soit un mariage, un anniversaire, une conférence ou toute occasion spéciale, 
+              nous sommes là pour rendre votre expérience de planification sans stress et agréable.
             </p>
           </div>
         </section>
 
-        {/* Key Features */}
         <section className="section gray-bg">
           <div className="container">
-            <h2 className="text-center">Key Features</h2>
+            <h2 className="text-center">Fonctionnalités Clés</h2>
             <div className="features-grid">
               {features.map((f, i) => (
                 <div key={i} className="feature-card">
@@ -140,10 +140,9 @@ const About = () => {
           </div>
         </section>
 
-        {/* How It Works */}
         <section className="section">
           <div className="container">
-            <h2 className="text-center">How It Works</h2>
+            <h2 className="text-center">Comment ça marche</h2>
             <div className="steps">
               {steps.map((s, i) => (
                 <div key={i} className={`step ${i % 2 === 1 ? 'reverse' : ''}`}>
@@ -152,7 +151,7 @@ const About = () => {
                     <h3>{s.title}</h3>
                     <p>{s.description}</p>
                     {i === 0 && (
-                      <Link to="/events" className="btn primary-btn">Browse Events</Link>
+                      <Link to="/events" className="btn primary-btn">Parcourir les Événements</Link>
                     )}
                   </div>
                 </div>
@@ -161,10 +160,9 @@ const About = () => {
           </div>
         </section>
 
-        {/* FAQ Section */}
         <section className="section gray-bg">
           <div className="container">
-            <h2 className="text-center">Frequently Asked Questions</h2>
+            <h2 className="text-center">Questions Fréquentes</h2>
             <div className="faq-list">
               {faqs.map((f, i) => (
                 <div key={i} className="faq-card">
@@ -179,13 +177,12 @@ const About = () => {
           </div>
         </section>
 
-        {/* CTA */}
         <section className="cta-section">
           <div className="container text-center white-text">
-            <h2>Ready to Plan Your Event?</h2>
-            <p>Get started today and make your next event a memorable success.</p>
+            <h2>Prêt à Planifier Votre Événement ?</h2>
+            <p>Commencez dès aujourd'hui et faites de votre prochain événement un succès mémorable.</p>
             <Link to="/events" className="btn white-btn">
-              Get Started
+              Commencer
               <ChevronRight className="icon-right" />
             </Link>
           </div>

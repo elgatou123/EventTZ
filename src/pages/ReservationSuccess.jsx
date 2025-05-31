@@ -1,5 +1,4 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./ReservationSuccess.css";
@@ -17,11 +16,11 @@ const ReservationSuccess = () => {
     if (navigator.share) {
       navigator
         .share({
-          title: "Event Invitation",
-          text: "I'd like to invite you to this event!",
+          title: "Invitation à un Événement",
+          text: "J'aimerais vous inviter à cet événement !",
           url: inviteUrl,
         })
-        .catch((error) => console.log("Error sharing", error));
+        .catch((error) => console.log("Erreur lors du partage", error));
     } else {
       copyToClipboard();
     }
@@ -38,15 +37,15 @@ const ReservationSuccess = () => {
               <div className="success-icon">
                 <i className="fa-solid fa-check check-icon"></i>
               </div>
-              <h2 className="reservation-title">Reservation Successful!</h2>
+              <h2 className="reservation-title">Réservation Réussie !</h2>
               <p className="reservation-description">
-                Your event reservation has been confirmed
+                Votre réservation d'événement a été confirmée
               </p>
             </div>
 
             <div className="reservation-content">
               <p className="share-text">
-                Share this unique invitation link with your guests:
+                Partagez ce lien d'invitation unique avec vos invités :
               </p>
 
               <div className="invite-box">
@@ -62,22 +61,35 @@ const ReservationSuccess = () => {
               </div>
 
               <div className="info-box">
-                <h3 className="info-title">Important Information</h3>
+                <h3 className="info-title">Informations Importantes</h3>
                 <ul className="info-list">
-                  <li>• Share this link with people you want to invite to your event.</li>
-                  <li>• Each guest can respond with Confirm, Decline, or Pending.</li>
-                  <li>• You can track all responses in your "My Reservations" area.</li>
-                  <li>• Keep this link safe - anyone with the link can respond.</li>
+                  <li>
+                    • Partagez ce lien avec les personnes que vous souhaitez
+                    inviter à votre événement.
+                  </li>
+                  <li>
+                    • Chaque invité peut répondre par Confirmer, Décliner ou En
+                    attente.
+                  </li>
+                  <li>
+                    • Vous pouvez suivre toutes les réponses dans votre espace
+                    "Mes Réservations".
+                  </li>
+                  <li>
+                    • Gardez ce lien en sécurité - toute personne ayant le lien
+                    peut répondre.
+                  </li>
                 </ul>
               </div>
             </div>
 
             <div className="reservation-footer">
               <button className="share-button" onClick={shareInvite}>
-                <i className="fa-solid fa-share-nodes"></i> Share Invitation
+                <i className="fa-solid fa-share-nodes"></i> Partager
+                l'Invitation
               </button>
               <Link to="/my-reservations" className="outline-button">
-                View My Reservations
+                Voir Mes Réservations
               </Link>
             </div>
           </div>

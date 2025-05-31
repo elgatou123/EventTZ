@@ -23,8 +23,8 @@ const MyReservations = () => {
   const copyToClipboard = (url) => {
     navigator.clipboard.writeText(url);
     toast({
-      title: "Link Copied",
-      description: "The link has been copied to your clipboard.",
+      title: "Lien copié",
+      description: "Le lien a été copié dans votre presse-papiers.",
     });
   };
 
@@ -32,7 +32,7 @@ const MyReservations = () => {
     <div className="my-reservations-container">
       <Navbar />
       <main className="main-content">
-        <h1 className="title">My Reservations</h1>
+        <h1 className="title">Mes Réservations</h1>
 
         <div className="tabs">
           <div className="tab-buttons">
@@ -40,13 +40,13 @@ const MyReservations = () => {
               className={`tab-button ${activeTab === "organized" ? "active" : ""}`}
               onClick={() => setActiveTab("organized")}
             >
-              Events I Organized
+              Événements que j'ai organisés
             </button>
             <button
               className={`tab-button ${activeTab === "invitations" ? "active" : ""}`}
               onClick={() => setActiveTab("invitations")}
             >
-              My Invitations
+              Mes Invitations
             </button>
           </div>
 
@@ -68,19 +68,19 @@ const MyReservations = () => {
                           <span className="event-type">{event.type}</span>
                           <h2 className="event-title">{event.title}</h2>
                           <p className="event-description">
-                            Reserved by {reservation.name} ({reservation.email})
+                            Réservé par {reservation.name} ({reservation.email})
                           </p>
                         </div>
                         <div className="card-header-right">
                           <a className="button outline-button" href={`/events/${event.id}`}>
-                            View Event
+                            Voir l'événement
                           </a>
                           <button
                             className="button outline-button"
                             onClick={() => copyToClipboard(`${window.location.origin}/invite/${reservation.inviteLink}`)}
                           >
                             <LinkIcon className="icon" />
-                            Copy Invite Link
+                            Copier le lien d'invitation
                           </button>
                         </div>
                       </div>
@@ -98,7 +98,7 @@ const MyReservations = () => {
                           <div className="info-item">
                             <Clock className="icon primary" />
                             <div>
-                              <h4>Time</h4>
+                              <h4>Heure</h4>
                               <p>{formatTime(event.time)}</p>
                             </div>
                           </div>
@@ -106,7 +106,7 @@ const MyReservations = () => {
                           <div className="info-item">
                             <MapPin className="icon primary" />
                             <div>
-                              <h4>Location</h4>
+                              <h4>Lieu</h4>
                               <p className="truncate">{event.location}</p>
                             </div>
                           </div>
@@ -114,28 +114,28 @@ const MyReservations = () => {
                           <div className="info-item">
                             <User className="icon primary" />
                             <div>
-                              <h4>Guests</h4>
-                              <p>{reservation.guests.length} invited</p>
+                              <h4>Invités</h4>
+                              <p>{reservation.guests.length} invités</p>
                             </div>
                           </div>
                         </div>
 
                         <div className="guest-responses">
-                          <h3>Guest Responses</h3>
+                          <h3>Réponses des invités</h3>
                           <div className="responses-grid">
                             <div className="response-box confirmed">
                               <CheckCircle className="icon response-icon" />
-                              <span>Confirmed</span>
+                              <span>Confirmés</span>
                               <span className="badge">{confirmed}</span>
                             </div>
                             <div className="response-box declined">
                               <XCircle className="icon response-icon" />
-                              <span>Declined</span>
+                              <span>Déclinés</span>
                               <span className="badge">{declined}</span>
                             </div>
                             <div className="response-box pending">
                               <ClockIcon className="icon response-icon" />
-                              <span>Pending</span>
+                              <span>En attente</span>
                               <span className="badge">{pending}</span>
                             </div>
                           </div>
@@ -143,13 +143,13 @@ const MyReservations = () => {
 
                         {reservation.guests.length > 0 && (
                           <div className="guest-list">
-                            <h3>Guest List</h3>
+                            <h3>Liste des invités</h3>
                             <table className="guest-table">
                               <thead>
                                 <tr>
-                                  <th>Name</th>
+                                  <th>Nom</th>
                                   <th>Email</th>
-                                  <th>Status</th>
+                                  <th>Statut</th>
                                   <th>Actions</th>
                                 </tr>
                               </thead>
@@ -185,10 +185,10 @@ const MyReservations = () => {
                 })
               ) : (
                 <div className="empty-message">
-                  <h3>No Organized Events</h3>
-                  <p>You haven't organized any events yet.</p>
+                  <h3>Aucun événement organisé</h3>
+                  <p>Vous n'avez encore organisé aucun événement.</p>
                   <a href="/events" className="button primary-button">
-                    Browse Events
+                    Parcourir les événements
                   </a>
                 </div>
               )}
@@ -213,7 +213,7 @@ const MyReservations = () => {
 
                       <div className="card-header">
                         <h2 className="event-title">{event.title}</h2>
-                        <p className="event-description">Invited by {event.organizerName}</p>
+                        <p className="event-description">Invité par {event.organizerName}</p>
                       </div>
 
                       <div className="card-body">
@@ -233,13 +233,13 @@ const MyReservations = () => {
 
                       <div className="card-footer">
                         <a href={`/events/${event.id}`} className="button outline-button">
-                          View Details
+                          Voir les détails
                         </a>
                         <a
                           href={`/invite/${invitation.inviteLink}`}
                           className="button primary-button"
                         >
-                          Respond
+                          Répondre
                         </a>
                       </div>
                     </div>
@@ -247,10 +247,10 @@ const MyReservations = () => {
                 })
               ) : (
                 <div className="empty-message">
-                  <h3>No Invitations</h3>
-                  <p>You haven't been invited to any events yet.</p>
+                  <h3>Aucune invitation</h3>
+                  <p>Vous n'avez été invité à aucun événement pour le moment.</p>
                   <a href="/events" className="button primary-button">
-                    Browse Events
+                    Parcourir les événements
                   </a>
                 </div>
               )}
